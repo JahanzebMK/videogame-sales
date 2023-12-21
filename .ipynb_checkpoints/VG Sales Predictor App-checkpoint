@@ -1,0 +1,55 @@
+import pickle
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.neural_network import MLPRegressor
+from unidecode import unidecode
+import pandas as pd
+import warnings
+warnings.filterwarnings('ignore')
+
+print('This app wil predict the sales of your video game based on its name, publisher, year, platform and genre.')
+
+model = pickle.load(open('Pickle/model.sav', 'rb'))
+scaler = pickle.load(open('Pickle/scaler.sav', 'rb'))
+predictor_df =  pd.read_pickle('Pickle/predictor_df.sav')
+with open('Pickle/franchise_list.pkl', 'rb') as f:
+    franchise_list = pickle.load(f)
+
+
+exit = False
+
+while exit==False:
+
+    name = unidecode((str(input('Enter the name of your video game:')).lower()))
+    publisher = unidecode(str(input('Enter the publisher of your video game:')).lower())
+    year = scaler.transform([[int(input('Enter the year of your video game:'))]])
+    platform = unidecode(str(input('Enter the platform of your video game:')).lower())
+    genre = unidecode(str(input('Enter the genre of your video game:')).lower())
+
+    for item in franchise_list:
+        if item in name:
+            print(item)
+            predictor_df.at[0,'series_'+item] = 1
+
+    if str('publisher_'+publisher) in predictor_df.columns:
+        print(publisher)
+        predictor_df.at[0,'publisher_'+publisher] = 1
+
+    predictor_df.at[0,'year'] = year
+
+    if str('platform_'+platform) in predictor_df.columns:
+        print(platform)
+        predictor_df.at[0,'platform_'+platform] = 1
+
+    if str('genre_'+genre) in predictor_df.columns:
+        print(genre)
+        predictor_df.at[0,'genre_'+genre] = 1
+    
+
+    predictions = model.predict(predictor_df)
+    print(predictions)
+
+    
+
+
+
+
