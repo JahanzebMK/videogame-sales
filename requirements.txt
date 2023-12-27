@@ -1,5 +1,3 @@
 pandas
 plost
 scikit-learn
-unidecode
-warnings
