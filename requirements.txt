@@ -1,7 +1,6 @@
 pandas
 plost
 pickle
-sklearn.preprocessing
-sklearn.neural_network
+sklearn
 unidecode
 warnings
