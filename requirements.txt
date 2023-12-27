@@ -1,6 +1,5 @@
 pandas
 plost
-pickle
 sklearn
 unidecode
 warnings
