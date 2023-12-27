@@ -1,3 +1,4 @@
 pandas
 plost
 scikit-learn
+unidecode
