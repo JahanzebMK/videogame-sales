@@ -1,2 +1,7 @@
 pandas
 plost
+pickle
+sklearn.preprocessing
+sklearn.neural_network
+unidecode
+warnings
