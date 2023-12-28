@@ -71,7 +71,7 @@ market_vg_sales.Year = market_vg_sales.Year.astype(str)
 c1, c2, c3,c4 = st.columns((2.5,2.5,2.5,2.5))
 with c1:
     st.markdown('### Top 10')
-    st.dataframe(vg_sales.head(10), hide_index = True, column_order=("Name", "Platform", "Global Sales (M)")) 
+    st.dataframe(vg_sales.head(10), hide_index = True, column_order=("Name", "Platform", "Global Sales (millions)")) 
 with c2:
     st.markdown('### Platform Donut Chart')
     plost.donut_chart(
