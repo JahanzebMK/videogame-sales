@@ -68,10 +68,10 @@ market_vg_sales = vg_sales.groupby(['Year'])[['NA_Sales (millions)', 'EU_Sales (
 market_vg_sales.Year = market_vg_sales.Year.astype(str)
 
 # Seperate visualisations into columns
-c1, c2, c3,c4 = st.columns((2.5,2.5,2.5,2.5))
+c1, c2, c3,c4 = st.columns((4,2.5,2.5,2.5))
 with c1:
     st.markdown('### Top 10')
-    st.dataframe(vg_sales.head(10), hide_index = True, column_order=("Name", "Platform", "Global Sales (millions)")) 
+    st.dataframe(vg_sales.head(10), hide_index = True, column_order=("Name", "Global Sales (millions)")) 
 with c2:
     st.markdown('### Platform Donut Chart')
     plost.donut_chart(
