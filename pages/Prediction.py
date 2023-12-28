@@ -56,12 +56,12 @@ if str('genre_'+genre) in predictor_df.columns:
 # Use MLPRegressor model to predict sales
 predictions = model.predict(predictor_df)
 
-# Extract, round and calculate sales predictions for different markets
-na = round(predictions[0,0], 2)
-eu = round(predictions[0,1], 2)
-jp = round(predictions[0,2], 2)
-other = round(predictions[0,3], 2)
-total = round((predictions[0,0]+predictions[0,1]+predictions[0,2]+predictions[0,3]), 2)
+# Extract, round and calculate sales predictions for different markets. Also converts negative values to 0 as sales can't be negative
+na = max(0, round(predictions[0,0], 2))
+eu = max(0, round(predictions[0,1], 2))
+jp = max(0, round(predictions[0,2], 2))
+other = max(0, round(predictions[0,3], 2))
+total = max(0, round((predictions[0,0]+predictions[0,1]+predictions[0,2]+predictions[0,3]), 2))
 
 # Display predictions to user
 display_data = {'          ': ['Sales (Millions)'], 'North America': [na], 'Europe': [eu], 'Japan': [jp], 'Other': [other], 'Global': [total]}
