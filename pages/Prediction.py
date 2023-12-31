@@ -16,6 +16,7 @@ st.sidebar.subheader('By Jahanzeb Khan')
 st.sidebar.markdown('Enter the details of your video game to receive a prediction of their physical sales.')
 
 # Load in model, scaler and other necessary varaibles from training the MLPRegressor model in ML Notebook
+device = torch.device("cpu")
 model = torch.nn.Sequential(
           torch.nn.Linear(782, 1500),
           torch.nn.ReLU(),
@@ -69,7 +70,7 @@ if str('genre_'+genre) in predictor_df.columns:
 x = torch.tensor(predictor_df.values,dtype=torch.float, device='cpu')
 
 # Use MLPRegressor model to predict sales
-model.to('cpu')
+model.to(device)
 predictions = model(x)
 
 unscaled_preds = predictions.detach().numpy()
