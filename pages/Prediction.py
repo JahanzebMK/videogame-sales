@@ -22,7 +22,7 @@ model = torch.nn.Sequential(
           torch.nn.ReLU(),
           torch.nn.Linear(1500, 4)
         )
-model.load_state_dict(torch.load('Pickle/model.pt'))
+model.load_state_dict(torch.load('Pickle/model.pt'), map_location=device)
 model.eval()
 year_scaler = pickle.load(open('Pickle/year_scaler.sav', 'rb'))
 na_scaler = pickle.load(open('Pickle/na_scaler.sav', 'rb'))
