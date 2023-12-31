@@ -2,3 +2,4 @@ pandas
 plost
 scikit-learn
 unidecode
+torch

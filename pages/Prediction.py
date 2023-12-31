@@ -1,11 +1,12 @@
 # Import important modules
 import streamlit as st
 import pickle
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPRegressor
 from unidecode import unidecode
 import pandas as pd
 import warnings
+import torch
 warnings.filterwarnings('ignore')
 
 # Config layout of page and add important info
@@ -16,21 +17,26 @@ st.sidebar.markdown('Enter the details of your video game to receive a predictio
 
 # Load in model, scaler and other necessary varaibles from training the MLPRegressor model in ML Notebook
 model = pickle.load(open('Pickle/model.sav', 'rb'))
-scaler = pickle.load(open('Pickle/scaler.sav', 'rb'))
+year_scaler = pickle.load(open('Pickle/year_scaler.sav', 'rb'))
+na_scaler = pickle.load(open('Pickle/na_scaler.sav', 'rb'))
+eu_scaler = pickle.load(open('Pickle/eu_scaler.sav', 'rb'))
+jp_scaler = pickle.load(open('Pickle/jp_scaler.sav', 'rb'))
+other_scaler = pickle.load(open('Pickle/other_scaler.sav', 'rb'))
 predictor_df =  pd.read_pickle('Pickle/predictor_df.sav')
 with open('Pickle/franchise_list.pkl', 'rb') as f:
     franchise_list = pickle.load(f)
+df = pd.read_csv('Data/scraped_vgsales.csv')
 
 # Take user inputs for their video game and process as necessary
 name = st.text_input('Enter the name of your video game:')
 name = unidecode(str(name).lower())
-publisher = st.text_input('Enter the publisher of your video game:')
+publisher = st.selectbox('Enter the publisher of your video game:', (df['Publisher'].unique().tolist()))
 publisher = unidecode(str(publisher).lower())
 year = st.number_input('Enter the year of your video game:', min_value=1980, value = 2024)
-year = scaler.transform([[int(year)]])
-platform = st.text_input('Enter the platform of your video game:')
+year = year_scaler.transform([[int(year)]])
+platform = st.selectbox('Enter the platform of your video game:', (df['Platform'].unique().tolist()))
 platform = unidecode(str(platform).lower())
-genre = st.text_input('Enter the genre of your video game:')
+genre = st.selectbox('Enter the genre of your video game:', (df['Genre'].unique().tolist()))
 genre = unidecode(str(genre).lower())
 
 # Loop through list of franchises and check if user video game belongs to any
@@ -53,15 +59,23 @@ if str('platform_'+platform) in predictor_df.columns:
 if str('genre_'+genre) in predictor_df.columns:
     predictor_df.at[0,'genre_'+genre] = 1
     
+# Create input tensor
+x = torch.tensor(predictor_df.values,dtype=torch.float, device='cpu')
+
 # Use MLPRegressor model to predict sales
-predictions = model.predict(predictor_df)
+model.to('cpu')
+predictions = model(x)
+
+unscaled_preds = predictions.detach().numpy()
+
+                                      
 
 # Extract, round and calculate sales predictions for different markets. Also converts negative values to 0 as sales can't be negative
-na = max(0, round(predictions[0,0], 2))
-eu = max(0, round(predictions[0,1], 2))
-jp = max(0, round(predictions[0,2], 2))
-other = max(0, round(predictions[0,3], 2))
-total = max(0, round((predictions[0,0]+predictions[0,1]+predictions[0,2]+predictions[0,3]), 2))
+na = max(0, round(float(na_scaler.inverse_transform(unscaled_preds[0,0].reshape(-1,1))), 2))
+eu = max(0, round(float(eu_scaler.inverse_transform(unscaled_preds[0,0].reshape(-1,1))), 2))
+jp = max(0, round(float(jp_scaler.inverse_transform(unscaled_preds[0,0].reshape(-1,1))), 2))
+other = max(0, round(float(other_scaler.inverse_transform(unscaled_preds[0,0].reshape(-1,1))), 2))
+total = max(0, (na+eu+jp+other))
 
 # Display predictions to user
 display_data = {'          ': ['Sales (Millions)'], 'North America': [na], 'Europe': [eu], 'Japan': [jp], 'Other': [other], 'Global': [total]}
