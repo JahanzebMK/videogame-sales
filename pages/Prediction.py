@@ -16,7 +16,13 @@ st.sidebar.subheader('By Jahanzeb Khan')
 st.sidebar.markdown('Enter the details of your video game to receive a prediction of their physical sales.')
 
 # Load in model, scaler and other necessary varaibles from training the MLPRegressor model in ML Notebook
-model = pickle.load(open('Pickle/model.sav', 'rb'))
+model = torch.nn.Sequential(
+          torch.nn.Linear(782, 1500),
+          torch.nn.ReLU(),
+          torch.nn.Linear(1500, 4)
+        )
+model.load_state_dict(torch.load('Pickle/model.pt'))
+model.eval()
 year_scaler = pickle.load(open('Pickle/year_scaler.sav', 'rb'))
 na_scaler = pickle.load(open('Pickle/na_scaler.sav', 'rb'))
 eu_scaler = pickle.load(open('Pickle/eu_scaler.sav', 'rb'))
